@@ -1,12 +1,26 @@
 Create Terraform Infrastructure with Docker: - Terraform workflow by deploying an NGINX Docker container
 
+After you install Terraform and Docker on your local machine, start Docker Desktop.
+
+open -a Docker
+
+Create a directory named learn-terraform-docker-container.
+
+mkdir learn-terraform-docker-container
+
+Then, navigate into it.
+
+cd learn-terraform-docker-container
+
+Paste the following Terraform configuration into a file and name it main.tf
+
 In a code editor create a new main.tf file. ".tf" is the terraform extension file. 
 
 terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 2.15.0"
+      version = "~> 2.13.0"
     }
   }
 }
@@ -35,8 +49,8 @@ Provision the NGINX server container with apply. When Terraform asks you to conf
 
 terraform apply
 
-Verify NGINX instance
-Run docker ps to view the NGINX container running in Docker via Terraform.
+Verify the existence of the NGINX container by visiting localhost:8000 in your web browser or running docker ps to see the container. Run docker ps to view the 
+NGINX container running in Docker via Terraform.
 
 docker ps
 
