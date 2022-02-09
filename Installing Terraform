@@ -1,0 +1,34 @@
+To use Terraform you will need to install it. HashiCorp distributes Terraform as a binary package. You can also install Terraform using popular package managers.
+
+Homebrew on OS X:
+Homebrew is a free and open-source package management system for Mac OS X. Install the official Terraform formula from the terminal.
+
+First, install the HashiCorp tap, a repository of all our Homebrew packages
+
+brew tap hashicorp/tap
+
+Now, install Terraform with hashicorp/tap/terraform.
+
+brew install hashicorp/tap/terraform
+
+To update to the latest version of Terraform, first update Homebrew.
+
+brew update
+
+Then, run the upgrade command to download and use the latest Terraform version.
+
+brew upgrade hashicorp/tap/terraform
+
+Verify the installation: Verify that the installation worked by opening a new terminal session and listing Terraform's available subcommands
+
+terraform -help
+
+Add any subcommand to terraform -help to learn more about what it does and available options.
+
+terraform -help plan
+
+Troubleshoot: 
+If you get an error that terraform could not be found, your PATH environment variable was not set up properly. Please go back and ensure that your PATH variable 
+contains the directory where Terraform was installed.
+
+
