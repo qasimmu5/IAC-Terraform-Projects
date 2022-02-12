@@ -1,0 +1,19 @@
+Once you no longer need infrastructure, you may want to destroy it to reduce your security exposure and costs. For example, you may remove a production environment 
+from service, or manage short-lived environments like build or testing systems. In addition to building and modifying infrastructure, Terraform can destroy or 
+recreate the infrastructure it manages.
+
+Destroy:
+The terraform destroy command terminates resources managed by your Terraform project. This command is the inverse of terraform apply in that it terminates all 
+the resources specified in your Terraform state. It does not destroy resources running elsewhere that are not managed by the current Terraform project.
+
+Destroy the resources you created.
+
+terraform destroy
+
+The - prefix indicates that the instance will be destroyed. As with apply, Terraform shows its execution plan and waits for approval before making any changes.
+
+Answer yes to execute this plan and destroy the infrastructure.
+
+
+
+
