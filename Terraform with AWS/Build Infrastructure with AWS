@@ -1,0 +1,219 @@
+Will provision an EC2 instance on Amazon Web Services (AWS). EC2 instances are virtual machines running on AWS, and a common component of many infrastructure 
+projects.
+
+Prerequisites: 
+. Terraform CLI installed 
+. AWS CLI installed
+
+1. In your browser, download the macOS pkg file: https://awscli.amazonaws.com/AWSCLIV2.pkg
+
+2. Run your downloaded file and follow the on-screen instructions. You can choose to install the AWS CLI in the following ways:
+ . For all users on the computer (requires sudo)
+       - You can install to any folder, or choose the recommended default folder of /usr/local/aws-cli.
+       - The installer automatically creates a symlink at /usr/local/bin/aws that links to the main program in the installation folder you chose.
+ . For only the current user (doesn't require sudo)
+       - You can install to any folder to which you have write permission.
+       - Due to standard user permissions, after the installer finishes, you must manually create a symlink file in your $PATH that points to the aws and 
+       aws_completer programs by using the following commands at the command prompt. If your $PATH includes a folder you can write to, you can run the 
+       following command without sudo if you specify that folder as the target's path. If you don't have a writable folder in your $PATH, you must use sudo in 
+       the commands to get permissions to write to the specified target folder. The default location for a symlink is /usr/local/bin/.
+      
+       sudo ln -s /folder/installed/aws-cli/aws /usr/local/bin/aws
+       file exist 
+       sudo ln -s /folder/installed/aws-cli/aws_completer /usr/local/bin/aws_completer
+       file exits
+       
+3. To verify that the shell can find and run the aws command in your $PATH, use the following commands.
+
+which aws
+/usr/local/bin/aws
+
+aws --version
+aws-cli/2.4.5 Python/3.8.8 Darwin/18.7.0 botocore/2.4.5
+
+If the aws command cannot be found, you may need to restart your terminal or follow the instructions in Adding the AWS CLI to your path.
+
+. AWS Account 
+. AWS Credentials. An Access Key 
+  - Use access keys to make programmatic calls to AWS from the AWS CLI, Tools for PowerShell, AWS SDKs, or direct AWS API calls. You can have a maximum of two 
+  access keys (active or inactive) at a time.
+
+Configure the AWS CLI from your terminal. Follow the prompts to input your AWS Access Key ID and Secret Access Key.
+
+aws configure
+
+Then insert your access key and secret access key. 
+It will ask for region name: The Default region name identifies the AWS Region whose servers you want to send your requests to by default. This is typically the 
+Region closest to you, but it can be any Region. For example, you can type us-west-2 to use US West (Oregon). This is the Region that all later requests are 
+sent to, unless you specify otherwise in an individual command.
+Then it will ask you default output format: The Default output format specifies how the results are formatted. The value can be any of the values in the following
+list. If you don't specify an output format, json is used as the default. It can be in json, yaml, text or table. 
+
+The configuration process stores your credentials in a file at ~/.aws/credentials on MacOS and Linux, or %UserProfile%\.aws\credentials on Windows.
+
+Write Configuration: 
+The set of files used to describe infrastructure in Terraform is known as a Terraform configuration. You will write your first configuration to define a single 
+AWS EC2 instance
+
+Each Terraform configuration must be in its own working directory. Create a directory for your configuration
+
+mkdir learn-terraform-aws-instance
+
+Change into the directory.
+
+cd learn-terraform-aws-instance
+
+Create a file to define your infrastructure.
+
+touch main.tf
+
+ What is AWS AMI?
+ An Amazon Machine Image (AMI) provides the information required to launch an instance. You must specify an AMI when you launch an instance. You can launch 
+ multiple instances from a single AMI when you need multiple instances with the same configuration. You can use different AMIs to launch instances when you 
+ need instances with different configurations.
+
+An AMI includes the following:
+- One or more Amazon Elastic Block Store (Amazon EBS) snapshots, or, for instance-store-backed AMIs, a template for the root volume of the instance (for example,
+an operating system, an application server, and applications).
+- Launch permissions that control which AWS accounts can use the AMI to launch instances.
+- A block device mapping that specifies the volumes to attach to the instance when it's launched. 
+Open main.tf in your text editor, paste in the configuration below, and save the file.
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
+    }
+  }
+
+  required_version = ">= 0.14.9"
+}
+
+provider "aws" {
+  profile = "default"
+  region  = "us-west-2"
+}
+
+resource "aws_instance" "app_server" {
+  ami           = "ami-830c94e3"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "ExampleAppServerInstance"
+  }
+}
+
+ Tip: The AMI ID used in this configuration is specific to the us-west-2 region. If you would like to use a different region, see the Troubleshooting section for 
+ guidance. 
+ For this I choose ami-0341aeea105412b57 and left instance type to t2.micro.
+ Also make sure when you are logged in from your aws management console so you can see the services, make sure you are in the us-west-2 region. Since you given 
+ credentials for that region. 
+ 
+ This is a complete configuration that you can deploy with Terraform. The following sections review each block of this configuration in more detail.
+
+Terraform Block:
+The terraform {} block contains Terraform settings, including the required providers Terraform will use to provision your infrastructure. For each provider, 
+the source attribute defines an optional hostname, a namespace, and the provider type. Terraform installs providers from the Terraform Registry by default. 
+In this example configuration, the aws provider's source is defined as hashicorp/aws, which is shorthand for registry.terraform.io/hashicorp/aws.
+
+You can also set a version constraint for each provider defined in the required_providers block. The version attribute is optional, but we recommend using it to 
+constrain the provider version so that Terraform does not install a version of the provider that does not work with your configuration. If you do not specify 
+a provider version, Terraform will automatically download the most recent version during initialization. 
+ 
+Providers: 
+The provider block configures the specified provider, in this case aws. A provider is a plugin that Terraform uses to create and manage your resources.
+The profile attribute in the aws provider block refers Terraform to the AWS credentials stored in your AWS configuration file, which you created when you 
+configured the AWS CLI. Never hard-code credentials or other secrets in your Terraform configuration files. Like other types of code, you may share and manage 
+your Terraform configuration files using source control, so hard-coding secret values can expose them to attackers.
+
+You can use multiple provider blocks in your Terraform configuration to manage resources from different providers. You can even use different providers together. 
+For example, you could pass the IP address of your AWS EC2 instance to a monitoring resource from DataDog. 
+
+Resources: 
+Use resource blocks to define components of your infrastructure. A resource might be a physical or virtual component such as an EC2 instance, or it can be a 
+logical resource such as a Heroku application.
+Resource blocks have two strings before the block: the resource type and the resource name. In this example, the resource type is aws_instance and the name is 
+app_server. The prefix of the type maps to the name of the provider. In the example configuration, Terraform manages the aws_instance resource with the aws 
+provider. Together, the resource type and resource name form a unique ID for the resource. For example, the ID for your EC2 instance is aws_instance.app_server.
+
+Resource blocks contain arguments which you use to configure the resource. Arguments can include things like machine sizes, disk image names, or VPC IDs. Our 
+providers reference documents the required and optional arguments for each resource. For your EC2 instance, the example configuration sets the AMI ID to an 
+Ubuntu image, and the instance type to t2.micro, which qualifies for AWS' free tier. It also sets a tag to give the instance a name.
+
+Initialize the Directory: 
+When you create a new configuration — or check out an existing configuration from version control — you need to initialize the directory with terraform init.
+Initializing a configuration directory downloads and installs the providers defined in the configuration, which in this case is the aws provider.
+Initialize the directory.
+
+terraform init
+
+Terraform downloads the aws provider and installs it in a hidden subdirectory of your current working directory, named .terraform. The terraform init command 
+prints out which version of the provider was installed. Terraform also creates a lock file named .terraform.lock.hcl which specifies the exact provider versions 
+used, so that you can control when you want to update the providers used for your project
+
+Format and Validate the Configuration:
+We recommend using consistent formatting in all of your configuration files. The terraform fmt command automatically updates configurations in the current 
+directory for readability and consistency. Format your configuration. Terraform will print out the names of the files it modified, if any. In this case, your 
+configuration file was already formatted correctly, so Terraform won't return any file names.
+
+terraform fmt
+
+You can also make sure your configuration is syntactically valid and internally consistent by using the terraform validate command. Validate your configuration. 
+The example configuration provided above is valid, so Terraform will return a success message.
+
+terraform validate
+
+Create Infrastructure: 
+Apply the configuration now with the terraform apply command.
+
+terraform apply
+
+tip: - If your configuration fails to apply, you may have customized your region or removed your default VPC. Refer to the troubleshooting page. 
+
+Before it applies any changes, Terraform prints out the execution plan which describes the actions Terraform will take in order to change your infrastructure to 
+match the configuration.
+
+The output format is similar to the diff format generated by tools such as Git. The output has a + next to aws_instance.app_server, meaning that Terraform will 
+create this resource. Beneath that, it shows the attributes that will be set. When the value displayed is (known after apply), it means that the value will not 
+be known until the resource is created. For example, AWS assigns Amazon Resource Names (ARNs) to instances upon creation, so Terraform cannot know the value of 
+the arn attribute until you apply the change and the AWS provider returns that value from the AWS API.
+
+Terraform will now pause and wait for your approval before proceeding. If anything in the plan seems incorrect or dangerous, it is safe to abort here with no 
+changes made to your infrastructure.
+
+In this case the plan is acceptable, so type yes at the confirmation prompt to proceed. Executing the plan will take a few minutes since Terraform waits for 
+the EC2 instance to become available.
+
+You have now created infrastructure using Terraform! Visit the EC2 console and find your new EC2 instance.
+
+Inspect State: 
+When you applied your configuration, Terraform wrote data into a file called terraform.tfstate. Terraform stores the IDs and properties of the resources it 
+manages in this file, so that it can update or destroy those resources going forward.
+
+The Terraform state file is the only way Terraform can track which resources it manages, and often contains sensitive information, so you must store your state 
+file securely and restrict access to only trusted team members who need to manage your infrastructure. In production, we recommend storing your state remotely 
+with Terraform Cloud or Terraform Enterprise. Terraform also supports several other remote backends you can use to store and manage your state.
+
+Inspect the current state using terraform show
+
+terraform show
+
+When Terraform created this EC2 instance, it also gathered the resource's metadata from the from the AWS provider and wrote the metadata to the state file. 
+Later in this collection, you will modify your configuration to reference these values to configure other resources and output values.
+
+Manually Managing State:
+Terraform has a built-in command called terraform state for advanced state management. Use the list subcommand to list of the resources in your project's state.
+
+terraform state list
+
+
+
+
+
+
+
+
+
+
+
