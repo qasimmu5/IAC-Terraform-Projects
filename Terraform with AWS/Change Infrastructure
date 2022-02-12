@@ -1,0 +1,25 @@
+Infrastructure is continuously evolving, and Terraform helps you manage that change. As you change Terraform configurations, Terraform builds an execution plan 
+that only modifies what is necessary to reach your desired state.
+
+When using Terraform in production, we recommend that you use a version control system to manage your configuration files, and store your state in a remote 
+backend such as Terraform Cloud or Terraform Enterprise.
+
+Configuration:
+Now update the ami of your instance. Change the aws_instance.app_server resource under the provider block in main.tf by replacing the current AMI ID with a 
+new one
+
+So lets change the AMI ID to ami-090bc08d7ae1f3881
+
+Then save and type terraform apply
+
+This update changes the AMI to an Ubuntu 16.04 AMI. The AWS provider knows that it cannot change the AMI of an instance after it has been created, so Terraform 
+will destroy the old instance and create a new one
+
+The prefix -/+ means that Terraform will destroy and recreate the resource, rather than updating it in-place. Terraform can update some attributes in-place 
+(indicated with the ~ prefix), but changing the AMI for an EC2 instance requires recreating it. Terraform handles these details for you, and the execution plan 
+displays what Terraform will do.
+
+Additionally, the execution plan shows that the AMI change is what forces Terraform to replace the instance. Using this information, you can adjust your changes 
+to to avoid destructive updates if necessary.
+
+Once again, Terraform prompts for approval of the execution plan before proceeding. Answer yes to execute the planned steps
