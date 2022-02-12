@@ -1,0 +1,31 @@
+In this tutorial, you will use output values to organize data to be easily queried and displayed to the Terraform user.
+
+Output EC2 instance configurations:
+
+Create a file called outputs.tf in your learn-terraform-aws-instance directory.
+Add the configuration below to outputs.tf to define outputs for your EC2 instance's ID and IP address.
+
+output "instance_id" {
+  description = "ID of the EC2 instance"
+  value       = aws_instance.app_server.id
+}
+
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.app_server.public_ip
+}
+
+Inspect output values: 
+You must apply this configuration before you can use these output values. Apply your configuration now. Respond to the confirmation prompt with yes
+
+So type 
+terraform apply
+
+Terraform prints output values to the screen when you apply your configuration. Query the outputs with the terraform output command.
+
+terraform output
+
+You can use Terraform outputs to connect your Terraform projects with other parts of your infrastructure, or with other Terraform projects. 
+
+Destroy Infrastructure: 
+terraform destroy
