@@ -1,0 +1,11 @@
+In production environments you should keep your state secure and encrypted, where your teammates can access it to collaborate on infrastructure. The best way to 
+do this is by running Terraform in a remote environment with shared access to state.
+
+Terraform Cloud allows teams to easily version, audit, and collaborate on infrastructure changes. It also securely stores variables, including API tokens and 
+access keys, and provides a safe, stable environment for long-running Terraform processes
+
+Set Up Terraform Cloud:
+If you do not have a Terraform Cloud account, please sign up for free here and create an organization. Make a note of the organization's name. Organizations are 
+privately shared spaces for teams to collaborate on infrastructure
+
+https://learn.hashicorp.com/tutorials/terraform/aws-remote?in=terraform/aws-get-started finish the rest of the tutorial later. 
